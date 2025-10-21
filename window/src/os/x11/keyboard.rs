@@ -208,11 +208,20 @@ impl KeyboardWithFallback {
             res |= Modifiers::CTRL;
         }
         if mask.contains(xcb::x::KeyButMask::MOD1) {
+            // meta
             res |= Modifiers::ALT;
         }
         if mask.contains(xcb::x::KeyButMask::MOD4) {
+            // ALT
             res |= Modifiers::SUPER;
         }
+        // hyper
+        if mask.contains(xcb::x::KeyButMask::MOD2) ||
+            mask.contains(xcb::x::KeyButMask::MOD3) {
+                log::debug!("Mod2-3");
+                res |= Modifiers::ENHANCED_KEY;
+        }
+
         res
     }
 
