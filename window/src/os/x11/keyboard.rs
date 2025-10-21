@@ -222,6 +222,9 @@ impl KeyboardWithFallback {
                 res |= Modifiers::ENHANCED_KEY;
         }
 
+        if res != Modifiers::default() {
+            log::debug!("button: detected modifier");
+        }
         res
     }
 
@@ -526,6 +529,10 @@ impl KeyboardWithFallback {
         if self.mod_is_active(xkb::MOD_NAME_LOGO) {
             // Mod4
             res |= Modifiers::SUPER;
+        }
+
+        if res != Modifiers::default() {
+            log::debug!("key: detected modifier");
         }
         res
     }
