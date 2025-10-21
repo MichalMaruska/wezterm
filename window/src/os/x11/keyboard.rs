@@ -281,12 +281,24 @@ impl KeyboardWithFallback {
     fn process_key_event_impl(
         &self,
         xcode: xkb::Keycode,
-        raw_modifiers: Modifiers,
+        mut raw_modifiers: Modifiers,
         pressed: bool,
         events: &mut WindowEventSender,
         want_repeat: bool,
     ) -> Option<WindowKeyEvent> {
-        let phys_code = self.selected.phys_code_map.borrow().get(&xcode).copied();
+        // mmc: enum!
+
+        let phys_code =
+            if 61 == xcode.raw() /*  == xkb::RawKeyCode::from(61) */ {
+                None
+            } else {
+                self.selected.phys_code_map.borrow().get(&xcode).copied()
+            };
+
+        if 61 == xcode.raw() {
+            log::debug!("Forcing modifier!");
+            raw_modifiers = Modifiers::LEFT_ALT;
+        }
 
         let leds = self.get_led_status();
 
