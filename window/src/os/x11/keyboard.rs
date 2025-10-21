@@ -300,9 +300,11 @@ impl KeyboardWithFallback {
             raw_modifiers = Modifiers::LEFT_ALT;
         }
 
+        log::debug!("process_key_event: {xcode:?} -> phys_code {phys_code:?}");
         let leds = self.get_led_status();
 
         let xsym = self.selected.state.borrow().key_get_one_sym(xcode);
+        log::debug!("process_key_event: {xcode:?} -> {xsym:?}");
         let fallback_xsym = self.fallback.state.borrow().key_get_one_sym(xcode);
         let handled = Handled::new();
 
@@ -335,6 +337,7 @@ impl KeyboardWithFallback {
                 return None;
             }
 
+            log::debug!("Fallback!");
             let fallback_feed = self.fallback.compose_feed(xcode, fallback_xsym);
             let selected_feed = self.selected.compose_feed(xcode, xsym);
 
@@ -388,6 +391,8 @@ impl KeyboardWithFallback {
 
                     let key_code_from_sym =
                         keysym_to_keycode(sym.into()).or_else(|| keysym_to_keycode(xsym.into()));
+
+                    log::debug!("still here {key_code_from_sym:?}");
 
                     // If we have a modified key, and its expansion is non-ascii, such as cyrillic
                     // "Es" (which appears visually similar to "c" in latin texts), then consider
