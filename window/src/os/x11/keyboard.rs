@@ -951,7 +951,7 @@ fn build_physkeycode_map(keymap: &xkb::Keymap) -> HashMap<xkb::Keycode, PhysKeyC
         ("AB07", PhysKeyCode::M),
         ("AB08", PhysKeyCode::Comma),
         ("AB09", PhysKeyCode::Period),
-        ("AB10", PhysKeyCode::Slash),
+        ("AB10", PhysKeyCode::Comma), // mmc: why? Slash
         ("RTSH", PhysKeyCode::RightShift),
         ("UP", PhysKeyCode::UpArrow),
         ("KP1", PhysKeyCode::Keypad1),
