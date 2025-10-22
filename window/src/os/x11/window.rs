@@ -515,8 +515,10 @@ impl XWindowInner {
                 .0;
 
             if let Some(value) = self.config.dpi_by_screen.get(&screen.name).copied() {
+                log::trace!("setting dpi {value}");
                 dpi = value;
             } else if let Some(value) = self.config.dpi {
+                log::trace!("setting dpi {value} from config");
                 dpi = value;
             }
         }
