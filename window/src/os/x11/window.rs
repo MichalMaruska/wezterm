@@ -547,7 +547,10 @@ impl XWindowInner {
 
         self.width = width;
         self.height = height;
-        self.dpi = dpi;
+        // mmc:
+        log::error!("Ignoring dpi value: {dpi}");
+        self.dpi = 196.0;
+
         self.last_wm_state = self.get_window_state().unwrap_or(WindowState::default());
 
         let dimensions = Dimensions {
