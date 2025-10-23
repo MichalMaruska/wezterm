@@ -102,6 +102,8 @@ impl KeyTableState {
         mods: Modifiers,
         only_key_bindings: OnlyKeyBindings,
     ) -> Option<(KeyTableEntry, Option<String>)> {
+        log::debug!("KeyTableState lookup_key: modifiers {mods:?} {key:?}");
+
         while self.process_expiration() {}
 
         let mut pop_count = 0;
@@ -215,6 +217,8 @@ impl super::TermWindow {
         mods: Modifiers,
         only_key_bindings: OnlyKeyBindings,
     ) -> Option<(KeyTableEntry, Option<String>)> {
+        log::debug!("TermWindow: lookup_key: modifiers {mods:?}");
+
         if let Some(overlay) = self.pane_state(pane.pane_id()).overlay.as_mut() {
             if let Some((entry, table_name)) = overlay.key_table_state.lookup_key(
                 &self.input_map,
@@ -248,6 +252,8 @@ impl super::TermWindow {
         is_down: bool,
         key_event: Option<&KeyEvent>,
     ) -> bool {
+        log::debug!("process_key: modifiers {leader_mod:?}");
+
         if is_down && !leader_active {
             // Check to see if this key-press is the leader activating
             if let Some(duration) = self.input_map.is_leader(&keycode, raw_modifiers) {
