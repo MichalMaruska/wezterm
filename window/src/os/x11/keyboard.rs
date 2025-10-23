@@ -216,12 +216,14 @@ impl KeyboardWithFallback {
             res |= Modifiers::SUPER;
         }
         // hyper
-        if mask.contains(xcb::x::KeyButMask::MOD2) ||
-            mask.contains(xcb::x::KeyButMask::MOD3) {
-                log::debug!("Mod2-3");
-                res |= Modifiers::ENHANCED_KEY;
+        if mask.contains(xcb::x::KeyButMask::MOD2) {
+            log::debug!("Mod2");
+            res |= Modifiers::LEFT_ALT;
         }
-
+        if mask.contains(xcb::x::KeyButMask::MOD3) {
+            log::debug!("Mod3");
+            res |= Modifiers::RIGHT_ALT;
+        }
         if res != Modifiers::default() {
             log::debug!("button: detected modifier");
         }
