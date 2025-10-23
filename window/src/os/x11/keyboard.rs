@@ -205,14 +205,17 @@ impl KeyboardWithFallback {
             res |= Modifiers::SHIFT;
         }
         if mask.contains(xcb::x::KeyButMask::CONTROL) {
+            log::debug!("CTRL");
             res |= Modifiers::CTRL;
         }
         if mask.contains(xcb::x::KeyButMask::MOD1) {
             // meta
+            log::debug!("ALT");
             res |= Modifiers::ALT;
         }
         if mask.contains(xcb::x::KeyButMask::MOD4) {
             // ALT
+            log::debug!("Mod4 super");
             res |= Modifiers::SUPER;
         }
         // hyper
