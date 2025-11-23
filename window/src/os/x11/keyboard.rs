@@ -205,13 +205,30 @@ impl KeyboardWithFallback {
             res |= Modifiers::SHIFT;
         }
         if mask.contains(xcb::x::KeyButMask::CONTROL) {
+            log::debug!("CTRL");
             res |= Modifiers::CTRL;
         }
         if mask.contains(xcb::x::KeyButMask::MOD1) {
+            // meta
+            log::debug!("ALT");
             res |= Modifiers::ALT;
         }
         if mask.contains(xcb::x::KeyButMask::MOD4) {
+            // ALT
+            log::debug!("Mod4 super");
             res |= Modifiers::SUPER;
+        }
+        // hyper
+        if mask.contains(xcb::x::KeyButMask::MOD2) {
+            log::debug!("Mod2");
+            res |= Modifiers::LEFT_ALT;
+        }
+        if mask.contains(xcb::x::KeyButMask::MOD3) {
+            log::debug!("Mod3");
+            res |= Modifiers::RIGHT_ALT;
+        }
+        if res != Modifiers::default() {
+            log::debug!("button: detected modifier");
         }
         res
     }
@@ -272,16 +289,30 @@ impl KeyboardWithFallback {
     fn process_key_event_impl(
         &self,
         xcode: xkb::Keycode,
-        raw_modifiers: Modifiers,
+        mut raw_modifiers: Modifiers,
         pressed: bool,
         events: &mut WindowEventSender,
         want_repeat: bool,
     ) -> Option<WindowKeyEvent> {
-        let phys_code = self.selected.phys_code_map.borrow().get(&xcode).copied();
+        // mmc: enum!
 
+        let phys_code =
+            if 61 == xcode.raw() /*  == xkb::RawKeyCode::from(61) */ {
+                None
+            } else {
+                self.selected.phys_code_map.borrow().get(&xcode).copied()
+            };
+
+        if 61 == xcode.raw() {
+            log::debug!("Forcing modifier!");
+            raw_modifiers = Modifiers::LEFT_ALT;
+        }
+
+        log::debug!("process_key_event: {xcode:?} -> phys_code {phys_code:?}");
         let leds = self.get_led_status();
 
         let xsym = self.selected.state.borrow().key_get_one_sym(xcode);
+        log::debug!("process_key_event: {xcode:?} -> {xsym:?}");
         let fallback_xsym = self.fallback.state.borrow().key_get_one_sym(xcode);
         let handled = Handled::new();
 
@@ -314,6 +345,7 @@ impl KeyboardWithFallback {
                 return None;
             }
 
+            log::debug!("Fallback!");
             let fallback_feed = self.fallback.compose_feed(xcode, fallback_xsym);
             let selected_feed = self.selected.compose_feed(xcode, xsym);
 
@@ -368,6 +400,8 @@ impl KeyboardWithFallback {
                     let key_code_from_sym =
                         keysym_to_keycode(sym.into()).or_else(|| keysym_to_keycode(xsym.into()));
 
+                    log::debug!("still here {key_code_from_sym:?}");
+
                     // If we have a modified key, and its expansion is non-ascii, such as cyrillic
                     // "Es" (which appears visually similar to "c" in latin texts), then consider
                     // this key expansion against the default latin layout.
@@ -406,7 +440,10 @@ impl KeyboardWithFallback {
                                      sym {fb_sym:?} because layout did not expand to \
                                      anything"
                                 );
-                                fb_sym
+                                // indeed: https://github.com/wezterm/wezterm/issues/4910#issuecomment-1962928909
+                                log::debug!("Not sure if this is a good idea -- maruska: disabled");
+                                // fb_sym
+                                sym
                             }
                             _ => sym,
                         }
@@ -497,6 +534,10 @@ impl KeyboardWithFallback {
         if self.mod_is_active(xkb::MOD_NAME_LOGO) {
             // Mod4
             res |= Modifiers::SUPER;
+        }
+
+        if res != Modifiers::default() {
+            log::debug!("key: detected modifier");
         }
         res
     }
@@ -922,7 +963,7 @@ fn build_physkeycode_map(keymap: &xkb::Keymap) -> HashMap<xkb::Keycode, PhysKeyC
         ("AB07", PhysKeyCode::M),
         ("AB08", PhysKeyCode::Comma),
         ("AB09", PhysKeyCode::Period),
-        ("AB10", PhysKeyCode::Slash),
+        ("AB10", PhysKeyCode::Comma), // mmc: why? Slash
         ("RTSH", PhysKeyCode::RightShift),
         ("UP", PhysKeyCode::UpArrow),
         ("KP1", PhysKeyCode::Keypad1),

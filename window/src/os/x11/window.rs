@@ -255,7 +255,7 @@ impl XWindowInner {
                 dimensions: Dimensions {
                     pixel_width: self.width as usize,
                     pixel_height: self.height as usize,
-                    dpi: self.dpi as usize,
+                    dpi: self.dpi as usize, // mmc:
                 },
                 window_state: self.last_wm_state,
                 live_resizing: false,
@@ -383,7 +383,7 @@ impl XWindowInner {
                             dimensions: Dimensions {
                                 pixel_width: self.width as usize,
                                 pixel_height: self.height as usize,
-                                dpi: self.dpi as usize,
+                                dpi: self.dpi as usize, // mmc:
                             },
                             window_state,
                             live_resizing: false,
@@ -515,8 +515,10 @@ impl XWindowInner {
                 .0;
 
             if let Some(value) = self.config.dpi_by_screen.get(&screen.name).copied() {
+                log::trace!("setting dpi {value}");
                 dpi = value;
             } else if let Some(value) = self.config.dpi {
+                log::trace!("setting dpi {value} from config");
                 dpi = value;
             }
         }
@@ -545,7 +547,10 @@ impl XWindowInner {
 
         self.width = width;
         self.height = height;
-        self.dpi = dpi;
+        // mmc:
+        log::error!("Ignoring dpi value: {dpi}");
+        self.dpi = 196.0;
+
         self.last_wm_state = self.get_window_state().unwrap_or(WindowState::default());
 
         let dimensions = Dimensions {

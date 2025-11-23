@@ -444,6 +444,7 @@ impl InputMap {
         mods: Modifiers,
         table_name: Option<&str>,
     ) -> Option<KeyTableEntry> {
+        log::debug!("InputMap lookup_key: modifiers {mods:?} in {table_name:?}");
         let table = match table_name {
             Some(name) => self.keys.by_name.get(name)?,
             None => &self.keys.default,
