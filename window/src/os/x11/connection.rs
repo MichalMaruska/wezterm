@@ -439,6 +439,7 @@ impl ConnectionOps for XConnection {
 
 fn compute_default_dpi(xrm: &HashMap<String, String>, xsettings: &XSettingsMap) -> f64 {
     if let Some(XSetting::Integer(dpi)) = xsettings.get("Xft/DPI") {
+        log::trace!("xsettings does have Xft/DPI {:?}", *dpi as f64);
         *dpi as f64 / 1024.0
     } else {
         xrm.get("Xft.dpi")
