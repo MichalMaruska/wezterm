@@ -2,7 +2,7 @@
 
 # invoked from the root of wezterm:
 ./get-deps
-apt install zlib1g-dev
+# apt install zlib1g-dev
 apt install rustup
 rustup install stable
 
